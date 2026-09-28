@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<title>iPhone Vision Screening Test</title>
+<style>
+  :root{
+    --bg:#f7f7f8;
+    --card:#ffffff;
+    --text:#111214;
+    --muted:#666b73;
+    --border:#d9dce1;
+    --accent:#111214;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:620px;
+    margin:0 auto;
+    padding:18px 16px 40px;
+  }
+  h1{font-size:28px;line-height:1.1;margin:8px 0 6px}
+  h2{font-size:20px;margin:0 0 10px}
+  p{line-height:1.45}
+  .sub{color:var(--muted);margin-top:0}
+  .panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+    margin:14px 0;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .hidden{display:none!important}
+  .steps{padding-left:21px;line-height:1.55}
+  label{font-weight:650;display:block;margin:12px 0 7px}
+  select,input[type=range]{
+    width:100%;
+  }
+  select{
+    padding:12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#fff;
+    font-size:16px;
+  }
+  button{
+    appearance:none;
+    border:0;
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:17px;
+    font-weight:700;
+    background:var(--accent);
+    color:white;
+    width:100%;
+    touch-action:manipulation;
+  }
+  button.secondary{
+    background:#eceef1;
+    color:#111214;
+  }
+  button:active{transform:scale(.99)}
+  .cal-stage{
+    overflow:hidden;
+    padding:10px 0 4px;
+  }
+  .card-outline{
+    height:54mm;
+    max-height:180px;
+    border:2px solid #111214;
+    border-radius:10px;
+    background:repeating-linear-gradient(
+      45deg,#fff,#fff 8px,#f3f3f3 8px,#f3f3f3 16px
+    );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color:#333;
+    user-select:none;
+    margin:0 auto 10px 0;
+  }
+  .cal-readout{
+    text-align:center;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+    margin:8px 0 2px;
+  }
+  .test-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    color:var(--muted);
+    font-weight:650;
+    margin-bottom:6px;
+  }
+  .optotype-zone{
+    min-height:310px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px 0;
+  }
+  #eSvg{
+    display:block;
+    overflow:visible;
+  }
+  .answer-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(2,64px);
+    gap:10px;
+    grid-template-areas:
+      ". up ."
+      "left down right";
+    margin-top:8px;
+  }
+  .answer-grid button{
+    height:64px;
+    font-size:28px;
+    padding:0;
+  }
+  .up{grid-area:up}
+  .left{grid-area:left}
+  .down{grid-area:down}
+  .right{grid-area:right}
+  .progress{
+    height:8px;background:#eceef1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+  }
+  .progress > div{
+    height:100%;width:0;background:#111214;transition:width .15s ease
+  }
+  .result{
+    font-size:44px;
+    font-weight:800;
+    letter-spacing:-1px;
+    text-align:center;
+    margin:16px 0 6px;
+  }
+  .result-sub{
+    text-align:center;color:var(--muted);font-size:16px;margin-bottom:18px;
+  }
+  .badge{
+    display:inline-block;
+    background:#eceef1;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .fine{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.45;
+  }
+  .warn{
+    background:#fff7df;
+    border:1px solid #efd58e;
+    padding:12px;
+    border-radius:12px;
+    font-size:14px;
+    line-height:1.45;
+  }
+  .row{display:flex;gap:10px}
+  .row button{flex:1}
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1012;--card:#181a1d;--text:#f4f4f5;--muted:#a4a8af;--border:#2b2e33;--accent:#f2f2f3;
+    }
+    button{color:#0d0e10}
+    button.secondary{background:#2a2d32;color:#fff}
+    select{background:#202226;color:#fff;border-color:#34373d}
+    .card-outline{
+      border-color:#f2f2f2;color:#eee;
+      background:repeating-linear-gradient(45deg,#181a1d,#181a1d 8px,#202327 8px,#202327 16px)
+    }
+    .progress{background:#2b2e33}
+    .progress > div{background:#f2f2f2}
+    .badge{background:#2a2d32}
+    .warn{background:#2b2515;border-color:#6d5921}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Vision Screening Test</h1>
+  <p class="sub">A calibrated, at-home estimate of distance visual acuity using a tumbling “E”.</p>
+
+  <section id="intro" class="panel">
+    <span class="badge">Step 1 of 3</span>
+    <h2>Set up the test</h2>
+    <ol class="steps">
+      <li>Use this in Safari with your iPhone held upright.</li>
+      <li>Set screen brightness high enough that the symbol is crisp, with no glare.</li>
+      <li>Wear your normal distance glasses or contacts if you want to test your corrected vision.</li>
+      <li>Test one eye at a time. Cover the other eye without pressing on it.</li>
+      <li>Keep the phone at the selected distance. A 2.0 m distance works well indoors.</li>
+    </ol>
+    <label for="distance">Test distance</label>
+    <select id="distance">
+      <option value="1.5">1.5 metres</option>
+      <option value="2" selected>2.0 metres</option>
+      <option value="2.5">2.5 metres</option>
+      <option value="3">3.0 metres</option>
+    </select>
+    <br><br>
+    <button onclick="showCal()">Calibrate screen size</button>
+  </section>
+
+  <section id="cal" class="panel hidden">
+    <span class="badge">Step 2 of 3</span>
+    <h2>Calibrate your screen</h2>
+    <p>Place a standard bank/credit card against the screen. Adjust the rectangle until its <b>width exactly matches your card</b> (85.60 mm).</p>
+    <div class="cal-stage">
+      <div id="cardBox" class="card-outline">MATCH CARD WIDTH</div>
+    </div>
+    <input id="cardSlider" type="range" min="220" max="420" step="1" value="324" oninput="updateCard()">
+    <div class="cal-readout"><span id="cardPx">324</span> screen units wide</div>
+    <br>
+    <button onclick="finishCal()">Looks exactly the same width</button>
+    <br><br>
+    <button class="secondary" onclick="showIntro()">Back</button>
+  </section>
+
+  <section id="test" class="panel hidden">
+    <span class="badge">Step 3 of 3</span>
+    <div class="test-head">
+      <span id="levelText">20/200</span>
+      <span id="trialText">1 of 5</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+
+    <div class="optotype-zone">
+      <svg id="eSvg" viewBox="0 0 5 5" aria-label="Tumbling E">
+        <g id="eGroup">
+          <rect x="0" y="0" width="1" height="5" fill="currentColor"/>
+          <rect x="0" y="0" width="5" height="1" fill="currentColor"/>
+          <rect x="0" y="2" width="4" height="1" fill="currentColor"/>
+          <rect x="0" y="4" width="5" height="1" fill="currentColor"/>
+        </g>
+      </svg>
+    </div>
+
+    <p style="text-align:center;margin:0 0 10px;color:var(--muted)">
+      Tap the direction the <b>open side</b> of the E points.
+    </p>
+
+    <div class="answer-grid">
+      <button class="up" onclick="answer('up')">↑</button>
+      <button class="left" onclick="answer('left')">←</button>
+      <button class="down" onclick="answer('down')">↓</button>
+      <button class="right" onclick="answer('right')">→</button>
+    </div>
+  </section>
+
+  <section id="resultPanel" class="panel hidden">
+    <span class="badge">Estimated result</span>
+    <div id="result" class="result">20/20</div>
+    <div id="resultSub" class="result-sub"></div>
+    <div class="warn">
+      This is a <b>screening estimate, not a diagnosis or prescription</b>. Screen calibration, room lighting, test distance, squinting, dry eyes, and how well the other eye is covered can change the result.
+    </div>
+    <br>
+    <div class="row">
+      <button onclick="restartTest()">Test other eye</button>
+      <button class="secondary" onclick="fullReset()">Recalibrate</button>
+    </div>
+    <p class="fine">
+      Seek a professional eye exam if one eye is clearly worse than the other, your vision has recently changed, you have eye pain, flashes/floaters, a curtain/shadow in your vision, or you are concerned despite a good home result.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>How the score works</h2>
+    <p class="fine" style="font-size:14px">
+      “20/40” means that at 20 feet, you can resolve detail that a person with standard 20/20 acuity could resolve at 40 feet. This test uses the same angular sizing principle, scaled to the shorter distance you choose.
+    </p>
+  </section>
+</div>
+
+<script>
+let pxPerMm = null;
+let levelIndex = 0;
+let trial = 0;
+let correct = 0;
+let bestPassed = null;
+let currentDir = null;
+
+// Easy -> hard
+const denominators = [200, 100, 80, 60, 50, 40, 30, 25, 20, 15];
+const dirs = ['right','down','left','up'];
+
+function showIntro(){
+  intro.classList.remove('hidden');
+  cal.classList.add('hidden');
+}
+function showCal(){
+  intro.classList.add('hidden');
+  cal.classList.remove('hidden');
+  updateCard();
+}
+function updateCard(){
+  const v = Number(cardSlider.value);
+  cardBox.style.width = v + 'px';
+  cardPx.textContent = v;
+}
+function finishCal(){
+  pxPerMm = Number(cardSlider.value) / 85.60;
+  cal.classList.add('hidden');
+  test.classList.remove('hidden');
+  startLevel();
+}
+function mmForSnellen(denom){
+  const dMeters = Number(distance.value);
+  const angle20 = 5 * Math.PI / (180*60); // 5 arcminutes
+  const h20mm = Math.tan(angle20) * dMeters * 1000;
+  return h20mm * (denom / 20);
+}
+function setESize(denom){
+  const mm = mmForSnellen(denom);
+  const px = mm * pxPerMm;
+  eSvg.style.width = px + 'px';
+  eSvg.style.height = px + 'px';
+}
+function randomDir(){
+  return dirs[Math.floor(Math.random()*dirs.length)];
+}
+function renderE(){
+  currentDir = randomDir();
+  const rotation = {right:0, down:90, left:180, up:270}[currentDir];
+  eGroup.setAttribute('transform', `rotate(${rotation} 2.5 2.5)`);
+}
+function startLevel(){
+  trial = 0;
+  correct = 0;
+  const denom = denominators[levelIndex];
+  levelText.textContent = `20/${denom}`;
+  setESize(denom);
+  nextTrial();
+}
+function nextTrial(){
+  if(trial >= 5){
+    finishLevel();
+    return;
+  }
+  trialText.textContent = `${trial+1} of 5`;
+  const totalCompleted = levelIndex*5 + trial;
+  const totalPossible = denominators.length*5;
+  bar.style.width = Math.min(100,(totalCompleted/totalPossible)*100) + '%';
+  renderE();
+}
+function answer(dir){
+  if(dir === currentDir) correct++;
+  trial++;
+  nextTrial();
+}
+function finishLevel(){
+  const denom = denominators[levelIndex];
+  const passed = correct >= 4; // 4/5 threshold
+  if(passed){
+    bestPassed = denom;
+    if(levelIndex < denominators.length-1){
+      levelIndex++;
+      startLevel();
+    } else {
+      showResult();
+    }
+  } else {
+    // If the very first level failed, report worse than 20/200
+    showResult();
+  }
+}
+function showResult(){
+  test.classList.add('hidden');
+  resultPanel.classList.remove('hidden');
+
+  if(bestPassed === null){
+    result.textContent = 'Worse than 20/200';
+    resultSub.textContent = 'You did not pass the largest test level at this distance.';
+  } else {
+    result.textContent = `20/${bestPassed}`;
+    let msg = '';
+    if(bestPassed <= 20) msg = 'Approximately standard distance acuity or better on this screening.';
+    else if(bestPassed <= 30) msg = 'A mild reduction from 20/20 on this screening.';
+    else if(bestPassed <= 50) msg = 'A noticeable reduction in distance acuity on this screening.';
+    else msg = 'A substantial reduction in distance acuity on this screening.';
+    resultSub.textContent = msg;
+  }
+}
+function restartTest(){
+  levelIndex = 0;
+  trial = 0;
+  correct = 0;
+  bestPassed = null;
+  resultPanel.classList.add('hidden');
+  test.classList.remove('hidden');
+  startLevel();
+}
+function fullReset(){
+  levelIndex = 0;
+  trial = 0;
+  correct = 0;
+  bestPassed = null;
+  resultPanel.classList.add('hidden');
+  cal.classList.remove('hidden');
+}
+updateCard();
+</script>
+</body>
+</html>
